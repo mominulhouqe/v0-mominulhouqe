@@ -1,382 +1,266 @@
-import { Suspense } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from "recharts"
-import DashboardStats from "@/components/admin/dashboard-stats"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Download } from "lucide-react"
-
-// Sample data for charts
-const salesData = [
-  { name: "Jan", sales: 4000 },
-  { name: "Feb", sales: 3000 },
-  { name: "Mar", sales: 5000 },
-  { name: "Apr", sales: 4500 },
-  { name: "May", sales: 6000 },
-  { name: "Jun", sales: 5500 },
-  { name: "Jul", sales: 6500 },
-  { name: "Aug", sales: 7000 },
-  { name: "Sep", sales: 6800 },
-  { name: "Oct", sales: 7200 },
-  { name: "Nov", sales: 8000 },
-  { name: "Dec", sales: 9500 },
-]
-
-const ordersData = [
-  { name: "Mon", orders: 12 },
-  { name: "Tue", orders: 19 },
-  { name: "Wed", orders: 15 },
-  { name: "Thu", orders: 21 },
-  { name: "Fri", orders: 25 },
-  { name: "Sat", orders: 18 },
-  { name: "Sun", orders: 14 },
-]
-
-const categoryData = [
-  { name: "Men", value: 35 },
-  { name: "Women", value: 45 },
-  { name: "Accessories", value: 20 },
-]
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28"]
-
-const recentOrders = [
-  {
-    id: "ORD-1234",
-    customer: "John Doe",
-    date: "May 15, 2023",
-    status: "Delivered",
-    amount: "$129.99",
-  },
-  {
-    id: "ORD-5678",
-    customer: "Jane Smith",
-    date: "May 14, 2023",
-    status: "Processing",
-    amount: "$89.99",
-  },
-  {
-    id: "ORD-9012",
-    customer: "Robert Johnson",
-    date: "May 14, 2023",
-    status: "Pending",
-    amount: "$59.99",
-  },
-  {
-    id: "ORD-3456",
-    customer: "Emily Davis",
-    date: "May 13, 2023",
-    status: "Delivered",
-    amount: "$149.99",
-  },
-  {
-    id: "ORD-7890",
-    customer: "Michael Wilson",
-    date: "May 12, 2023",
-    status: "Cancelled",
-    amount: "$79.99",
-  },
-]
-
-const topProducts = [
-  { name: "Classic Cotton T-Shirt", sales: 245, revenue: "$6,125.00" },
-  { name: "Slim Fit Jeans", sales: 187, revenue: "$9,350.00" },
-  { name: "Leather Jacket", sales: 124, revenue: "$16,120.00" },
-  { name: "Summer Dress", sales: 98, revenue: "$4,900.00" },
-  { name: "Running Shoes", sales: 76, revenue: "$6,840.00" },
-]
-
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Skeleton className="h-4 w-24 mb-2" />
-                  <Skeleton className="h-8 w-16" />
-                </div>
-                <Skeleton className="h-12 w-12 rounded-full" />
-              </div>
-              <div className="flex items-center mt-4">
-                <Skeleton className="h-4 w-32" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-80 w-full" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-80 w-full" />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
+export const metadata = {
+  title: "Admin Dashboard | Strange Lifestyle",
+  description: "Admin dashboard for Strange Lifestyle e-commerce platform",
 }
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-gray-500">Welcome to your admin dashboard</p>
-        </div>
-        <Button variant="outline" size="sm">
-          <Download className="mr-2 h-4 w-4" />
-          Download Report
-        </Button>
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600">Welcome to Strange Lifestyle Admin Dashboard</p>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="sales">Sales</TabsTrigger>
-          <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="customers">Customers</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          <Suspense fallback={<DashboardSkeleton />}>
-            <DashboardStats />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sales Overview</CardTitle>
-                  <CardDescription>Monthly sales performance</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={salesData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="sales" fill="#3b82f6" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Orders</CardTitle>
-                  <CardDescription>Daily order trends</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={ordersData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="orders" stroke="#3b82f6" activeDot={{ r: 8 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+              <p className="text-3xl font-bold text-gray-900">$45,231.89</p>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-1">
-                <CardHeader>
-                  <CardTitle>Sales by Category</CardTitle>
-                  <CardDescription>Distribution of sales by product category</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80 flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={categoryData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        >
-                          {categoryData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle>Recent Orders</CardTitle>
-                  <CardDescription>Latest customer orders</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-2">Order ID</th>
-                          <th className="text-left py-3 px-2">Customer</th>
-                          <th className="text-left py-3 px-2">Date</th>
-                          <th className="text-left py-3 px-2">Status</th>
-                          <th className="text-right py-3 px-2">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentOrders.map((order) => (
-                          <tr key={order.id} className="border-b">
-                            <td className="py-3 px-2">{order.id}</td>
-                            <td className="py-3 px-2">{order.customer}</td>
-                            <td className="py-3 px-2">{order.date}</td>
-                            <td className="py-3 px-2">
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs ${
-                                  order.status === "Delivered"
-                                    ? "bg-green-100 text-green-800"
-                                    : order.status === "Processing"
-                                      ? "bg-blue-100 text-blue-800"
-                                      : order.status === "Pending"
-                                        ? "bg-yellow-100 text-yellow-800"
-                                        : "bg-red-100 text-red-800"
-                                }`}
-                              >
-                                {order.status}
-                              </span>
-                            </td>
-                            <td className="py-3 px-2 text-right">{order.amount}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="p-3 bg-green-100 rounded-full">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                />
+              </svg>
             </div>
-          </Suspense>
-        </TabsContent>
+          </div>
+          <p className="text-sm text-green-600 mt-2">+20.1% from last month</p>
+        </div>
 
-        <TabsContent value="sales" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sales Performance</CardTitle>
-              <CardDescription>Detailed sales data over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-96">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={salesData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="sales" stroke="#3b82f6" activeDot={{ r: 8 }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Orders</p>
+              <p className="text-3xl font-bold text-gray-900">2,350</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-full">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm text-blue-600 mt-2">+180.1% from last month</p>
+        </div>
 
-        <TabsContent value="products" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Selling Products</CardTitle>
-              <CardDescription>Products with the highest sales volume</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-2">Product Name</th>
-                      <th className="text-right py-3 px-2">Units Sold</th>
-                      <th className="text-right py-3 px-2">Revenue</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {topProducts.map((product, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-3 px-2">{product.name}</td>
-                        <td className="py-3 px-2 text-right">{product.sales}</td>
-                        <td className="py-3 px-2 text-right">{product.revenue}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Customers</p>
+              <p className="text-3xl font-bold text-gray-900">1,234</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-full">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm text-purple-600 mt-2">+19% from last month</p>
+        </div>
 
-        <TabsContent value="customers" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Growth</CardTitle>
-              <CardDescription>New customer acquisitions over time</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-96">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={salesData.map((item) => ({ ...item, customers: Math.floor(item.sales / 50) }))}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="customers" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Products</p>
+              <p className="text-3xl font-bold text-gray-900">573</p>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-full">
+              <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm text-orange-600 mt-2">+201 from last month</p>
+        </div>
+      </div>
+
+      {/* Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Recent Orders */}
+        <div className="bg-white rounded-lg shadow-sm border">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
+            <p className="text-sm text-gray-600">Latest customer orders</p>
+          </div>
+          <div className="p-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">Order ID</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">Customer</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">Status</th>
+                    <th className="text-right py-3 text-sm font-medium text-gray-600">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  <tr>
+                    <td className="py-3 text-sm text-gray-900">#ORD-001</td>
+                    <td className="py-3 text-sm text-gray-900">John Doe</td>
+                    <td className="py-3">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        Delivered
+                      </span>
+                    </td>
+                    <td className="py-3 text-sm text-gray-900 text-right">$129.99</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 text-sm text-gray-900">#ORD-002</td>
+                    <td className="py-3 text-sm text-gray-900">Jane Smith</td>
+                    <td className="py-3">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Processing
+                      </span>
+                    </td>
+                    <td className="py-3 text-sm text-gray-900 text-right">$89.99</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 text-sm text-gray-900">#ORD-003</td>
+                    <td className="py-3 text-sm text-gray-900">Bob Johnson</td>
+                    <td className="py-3">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                        Pending
+                      </span>
+                    </td>
+                    <td className="py-3 text-sm text-gray-900 text-right">$59.99</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 text-sm text-gray-900">#ORD-004</td>
+                    <td className="py-3 text-sm text-gray-900">Alice Brown</td>
+                    <td className="py-3">
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        Delivered
+                      </span>
+                    </td>
+                    <td className="py-3 text-sm text-gray-900 text-right">$199.99</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Products */}
+        <div className="bg-white rounded-lg shadow-sm border">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold text-gray-900">Top Products</h3>
+            <p className="text-sm text-gray-600">Best selling items this month</p>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Classic Cotton T-Shirt</p>
+                  <p className="text-xs text-gray-500">245 units sold</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">$6,125.00</p>
+                  <p className="text-xs text-green-600">+12%</p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Slim Fit Jeans</p>
+                  <p className="text-xs text-gray-500">187 units sold</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">$9,350.00</p>
+                  <p className="text-xs text-green-600">+8%</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Leather Jacket</p>
+                  <p className="text-xs text-gray-500">124 units sold</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">$16,120.00</p>
+                  <p className="text-xs text-green-600">+15%</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Summer Dress</p>
+                  <p className="text-xs text-gray-500">98 units sold</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">$4,900.00</p>
+                  <p className="text-xs text-green-600">+5%</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Running Shoes</p>
+                  <p className="text-xs text-gray-500">76 units sold</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-gray-900">$6,840.00</p>
+                  <p className="text-xs text-green-600">+3%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sales by Category */}
+      <div className="bg-white rounded-lg shadow-sm border">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold text-gray-900">Sales by Category</h3>
+          <p className="text-sm text-gray-600">Revenue distribution across product categories</p>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="relative w-24 h-24 mx-auto mb-4">
+                <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-blue-600">35%</span>
+                </div>
+              </div>
+              <h4 className="text-sm font-medium text-gray-900">Men's Clothing</h4>
+              <p className="text-xs text-gray-500">$15,831.13</p>
+            </div>
+            <div className="text-center">
+              <div className="relative w-24 h-24 mx-auto mb-4">
+                <div className="w-24 h-24 rounded-full bg-pink-100 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-pink-600">45%</span>
+                </div>
+              </div>
+              <h4 className="text-sm font-medium text-gray-900">Women's Clothing</h4>
+              <p className="text-xs text-gray-500">$20,354.35</p>
+            </div>
+            <div className="text-center">
+              <div className="relative w-24 h-24 mx-auto mb-4">
+                <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-green-600">20%</span>
+                </div>
+              </div>
+              <h4 className="text-sm font-medium text-gray-900">Accessories</h4>
+              <p className="text-xs text-gray-500">$9,046.41</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

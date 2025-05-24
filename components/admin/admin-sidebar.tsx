@@ -5,17 +5,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
-  ShoppingBag,
-  Users,
   Package,
+  ShoppingCart,
+  Users,
   Settings,
-  LogOut,
-  ChevronDown,
-  ChevronRight,
+  BarChart3,
   Tag,
-  UserCog,
-  Boxes,
-  LineChart,
+  UserCheck,
+  Package2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -38,17 +35,8 @@ const sidebarLinks = [
     ],
   },
   {
-    title: "Inventory",
-    icon: Boxes,
-    href: "/admin/inventory",
-    submenu: [
-      { title: "Stock Management", href: "/admin/inventory" },
-      { title: "Inventory Logs", href: "/admin/inventory/logs" },
-    ],
-  },
-  {
     title: "Orders",
-    icon: ShoppingBag,
+    icon: ShoppingCart,
     href: "/admin/orders",
     submenu: [
       { title: "All Orders", href: "/admin/orders" },
@@ -64,19 +52,33 @@ const sidebarLinks = [
     href: "/admin/customers",
   },
   {
-    title: "Discounts",
-    icon: Tag,
-    href: "/admin/discounts",
+    title: "Inventory",
+    icon: Package2,
+    href: "/admin/inventory",
+    submenu: [
+      { title: "Stock Management", href: "/admin/inventory" },
+      { title: "Inventory Logs", href: "/admin/inventory/logs" },
+    ],
   },
   {
     title: "Analytics",
-    icon: LineChart,
+    icon: BarChart3,
     href: "/admin/analytics",
     submenu: [
       { title: "Sales Overview", href: "/admin/analytics" },
       { title: "Product Performance", href: "/admin/analytics?tab=products" },
       { title: "Customer Insights", href: "/admin/analytics?tab=customers" },
     ],
+  },
+  {
+    title: "Discounts",
+    icon: Tag,
+    href: "/admin/discounts",
+  },
+  {
+    title: "Users",
+    icon: UserCheck,
+    href: "/admin/users",
   },
   {
     title: "Settings",
@@ -87,11 +89,6 @@ const sidebarLinks = [
       { title: "Payment", href: "/admin/settings?tab=payment" },
       { title: "Shipping", href: "/admin/settings?tab=shipping" },
     ],
-  },
-  {
-    title: "Users",
-    icon: UserCog,
-    href: "/admin/users",
   },
 ]
 
@@ -116,11 +113,14 @@ export default function AdminSidebar() {
   }
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
-        <Link href="/admin" className="flex items-center">
-          <span className="text-xl font-bold text-primary">Admin Panel</span>
-        </Link>
+    <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
+      <div className="p-6">
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">SL</span>
+          </div>
+          <span className="ml-2 text-lg font-semibold text-gray-900">Strange Lifestyle</span>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4">
@@ -138,11 +138,7 @@ export default function AdminSidebar() {
                     >
                       <Icon className="h-5 w-5 mr-2" />
                       {link.title}
-                      {openMenus[link.title] ? (
-                        <ChevronDown className="h-4 w-4 ml-auto" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 ml-auto" />
-                      )}
+                      {openMenus[link.title] ? <span className="ml-auto">-</span> : <span className="ml-auto">+</span>}
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
@@ -183,8 +179,7 @@ export default function AdminSidebar() {
 
       <div className="p-4 border-t border-gray-200">
         <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>
-          <LogOut className="h-5 w-5 mr-2" />
-          Logout
+          <span className="mr-3">Logout</span>
         </Button>
       </div>
     </div>
