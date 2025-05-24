@@ -1,26 +1,49 @@
 import { NextResponse } from "next/server"
-import { sendOrderStatusNotification } from "@/lib/notifications"
+import { sendShippingUpdate, sendDeliveryConfirmation, sendOrderCancellation } from "@/lib/notifications"
 
 export async function POST(request: Request) {
   try {
-    const { orderId, newStatus, customer, order, additionalData } = await request.json()
+    const { orderId, status, trackingNumber, reason, customer, order } = await request.json()
+
+    if (!orderId || !status) {
+      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
+    }
 
     // In a real application, you would update the order in your database here
-    // const updatedOrder = await db.orders.update({ id: orderId }, { status: newStatus });
+    // await db.orders.update({ where: { id: orderId }, data: { status } })
 
-    // Send notification based on the new status
-    const emailResult = await sendOrderStatusNotification(order, customer, newStatus, additionalData)
+    let emailResult = { success: true, message: "Email service not configured" }
 
-    if (!emailResult.success) {
-      console.error(`Failed to send ${newStatus} notification email:`, emailResult.error)
-      // Continue with order processing even if email fails
+    // Send appropriate email based on status
+    try {
+      switch (status) {
+        case "shipped":
+          if (trackingNumber && customer && order) {
+            emailResult = await sendShippingUpdate(order, customer, trackingNumber)
+          }
+          break
+        case "delivered":
+          if (customer && order) {
+            emailResult = await sendDeliveryConfirmation(order, customer)
+          }
+          break
+        case "cancelled":
+          if (customer && order && reason) {
+            emailResult = await sendOrderCancellation(order, customer, reason)
+          }
+          break
+      }
+    } catch (emailError) {
+      console.error("Email service error:", emailError)
+      // Continue with status update even if email fails
     }
 
     return NextResponse.json({
       success: true,
       orderId,
-      status: newStatus,
+      status,
       emailSent: emailResult.success,
+      message: `Order status updated to ${status}`,
     })
   } catch (error) {
     console.error("Error updating order status:", error)

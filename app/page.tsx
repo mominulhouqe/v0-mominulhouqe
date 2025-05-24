@@ -25,6 +25,11 @@ import BrandShowcase from "@/components/brand-showcase"
 import TrendingProducts from "@/components/trending-products"
 import InstagramFeed from "@/components/instagram-feed"
 
+export const metadata = {
+  title: "Strange Lifestyle | Unique Fashion & Clothing Store",
+  description: "Discover unique clothing that expresses your individuality. Quality fashion for every occasion.",
+}
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -75,7 +80,7 @@ export default function Home() {
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold mb-2">Shop by Category</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Discover our wide range of products across different categories
+              Discover our wide range of unique clothing across different categories
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -121,21 +126,21 @@ export default function Home() {
       </section>
 
       {/* Promotional Banner */}
-      <section className="py-16 bg-gray-900 text-white">
+      <section className="py-16 bg-gradient-to-r from-purple-900 to-indigo-900 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="order-2 md:order-1">
               <Badge variant="outline" className="mb-2 border-white text-white">
                 Limited Time Offer
               </Badge>
-              <h2 className="text-4xl font-bold mb-4">Summer Collection 2023</h2>
+              <h2 className="text-4xl font-bold mb-4">Strange Collection 2024</h2>
               <p className="text-gray-300 mb-6 text-lg">
-                Discover our latest summer collection with vibrant colors and comfortable fabrics. Perfect for your
-                summer adventures.
+                Discover our latest collection with unique designs and premium quality fabrics. Express your
+                individuality with Strange Lifestyle.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" variant="default" className="bg-white text-gray-900 hover:bg-gray-200">
-                  <Link href="/products?category=summer">
+                  <Link href="/products?category=new">
                     Shop Collection <ChevronRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -150,8 +155,8 @@ export default function Home() {
             </div>
             <div className="order-1 md:order-2 relative h-[400px]">
               <Image
-                src="/placeholder.svg?height=600&width=600"
-                alt="Summer Collection"
+                src="/placeholder.svg?height=600&width=600&text=Strange+Collection"
+                alt="Strange Collection"
                 fill
                 className="object-cover rounded-lg shadow-xl"
               />
@@ -187,9 +192,9 @@ export default function Home() {
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShoppingBag className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Shop with Confidence</h3>
+              <h3 className="text-xl font-bold mb-2">Unique Style</h3>
               <p className="text-gray-600">
-                Browse our curated collection of premium quality clothing and accessories.
+                Express your individuality with our carefully curated collection of unique clothing and accessories.
               </p>
             </div>
             <div className="bg-white p-8 rounded-lg shadow-sm text-center">
@@ -197,15 +202,17 @@ export default function Home() {
                 <Clock className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-2">Fast Delivery</h3>
-              <p className="text-gray-600">Get your orders delivered quickly with our reliable shipping partners.</p>
+              <p className="text-gray-600">
+                Get your orders delivered quickly with our reliable shipping partners across Bangladesh.
+              </p>
             </div>
             <div className="bg-white p-8 rounded-lg shadow-sm text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Customer Satisfaction</h3>
+              <h3 className="text-xl font-bold mb-2">Customer Love</h3>
               <p className="text-gray-600">
-                We're committed to providing the best shopping experience for our customers.
+                We're committed to providing the best shopping experience and quality products for our customers.
               </p>
             </div>
           </div>
@@ -217,7 +224,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-2">
-              @stylishthreads
+              @strangelifestyle
             </Badge>
             <h2 className="text-3xl font-bold mb-2">Follow Us on Instagram</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">

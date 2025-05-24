@@ -1,8 +1,9 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+
+import type React from "react"
+import { Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -51,10 +52,37 @@ const mockReviews = [
   },
 ]
 
+const reviews = [
+  {
+    id: 1,
+    name: "Sarah Ahmed",
+    rating: 5,
+    date: "2 weeks ago",
+    comment: "Amazing quality and unique design! I get so many compliments when wearing this.",
+    verified: true,
+  },
+  {
+    id: 2,
+    name: "Rafiq Hassan",
+    rating: 4,
+    date: "1 month ago",
+    comment: "Great product, fits perfectly. The material is very comfortable.",
+    verified: true,
+  },
+  {
+    id: 3,
+    name: "Fatima Khan",
+    rating: 5,
+    date: "2 months ago",
+    comment: "Love the style! Exactly what I was looking for. Will definitely order more.",
+    verified: true,
+  },
+]
+
 export default function ProductReviews({ productId }: { productId: string }) {
   const { user } = useAuth()
   const { toast } = useToast()
-  const [reviews, setReviews] = useState(mockReviews)
+  const [reviewsState, setReviewsState] = useState([...mockReviews, ...reviews])
   const [newReview, setNewReview] = useState({
     rating: 5,
     title: "",
@@ -106,7 +134,7 @@ export default function ProductReviews({ productId }: { productId: string }) {
       avatar: "/placeholder.svg?height=40&width=40",
     }
 
-    setReviews([review, ...reviews])
+    setReviewsState([review, ...reviewsState])
     setNewReview({
       rating: 5,
       title: "",
@@ -121,8 +149,8 @@ export default function ProductReviews({ productId }: { productId: string }) {
   }
 
   const markHelpful = (reviewId: string) => {
-    setReviews(
-      reviews.map((review) => {
+    setReviewsState(
+      reviewsState.map((review) => {
         if (review.id === reviewId) {
           return { ...review, helpful: review.helpful + 1 }
         }
@@ -135,31 +163,18 @@ export default function ProductReviews({ productId }: { productId: string }) {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-xl font-semibold">Customer Reviews ({reviews.length})</h3>
+          <h3 className="text-xl font-semibold">Customer Reviews ({reviewsState.length})</h3>
           <div className="flex items-center mt-1">
             <div className="flex">
               {[1, 2, 3, 4, 5].map((star) => (
-                <svg
-                  key={star}
-                  className={`h-5 w-5 ${
-                    star <= reviews.reduce((acc, review) => acc + review.rating, 0) / Math.max(1, reviews.length)
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 15.585l-6.327 3.323 1.209-7.04-5.117-4.981 7.063-1.026L10 0l3.172 6.468 7.063 1.026-5.117 4.981 1.209 7.04z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Star key={star} className="h-5 w-5 text-yellow-400 fill-current" />
               ))}
             </div>
             <span className="ml-2 text-gray-600">
-              {(reviews.reduce((acc, review) => acc + review.rating, 0) / Math.max(1, reviews.length)).toFixed(1)} out
-              of 5
+              {(
+                reviewsState.reduce((acc, review) => acc + review.rating, 0) / Math.max(1, reviewsState.length)
+              ).toFixed(1)}{" "}
+              out of 5
             </span>
           </div>
         </div>
@@ -184,17 +199,9 @@ export default function ProductReviews({ productId }: { productId: string }) {
                     onClick={() => handleRatingChange(star)}
                     className="focus:outline-none"
                   >
-                    <svg
-                      className={`h-8 w-8 ${star <= newReview.rating ? "text-yellow-400" : "text-gray-300"}`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 15.585l-6.327 3.323 1.209-7.04-5.117-4.981 7.063-1.026L10 0l3.172 6.468 7.063 1.026-5.117 4.981 1.209 7.04z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <Star
+                      className={`h-8 w-8 ${star <= newReview.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                    />
                   </button>
                 ))}
               </div>
@@ -235,37 +242,38 @@ export default function ProductReviews({ productId }: { productId: string }) {
       )}
 
       <div className="space-y-6">
-        {reviews.length === 0 ? (
+        {reviewsState.length === 0 ? (
           <p className="text-gray-500">No reviews yet. Be the first to review this product!</p>
         ) : (
-          reviews.map((review) => (
+          reviewsState.map((review) => (
             <div key={review.id} className="border-b pb-6">
               <div className="flex items-start gap-4">
                 <Avatar>
-                  <AvatarImage src={review.avatar || "/placeholder.svg"} alt={review.userName} />
-                  <AvatarFallback>{review.userName.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={review.avatar || "/placeholder.svg"} alt={review.userName || review.name} />
+                  <AvatarFallback>{(review.userName || review.name).charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex items-center">
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <svg
-                          key={star}
-                          className={`h-4 w-4 ${star <= review.rating ? "text-yellow-400" : "text-gray-300"}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 15.585l-6.327 3.323 1.209-7.04-5.117-4.981 7.063-1.026L10 0l3.172 6.468 7.063 1.026-5.117 4.981 1.209 7.04z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      ))}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <span className="font-medium">{review.userName || review.name}</span>
+                      {review.verified && (
+                        <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                          Verified Purchase
+                        </span>
+                      )}
                     </div>
-                    <span className="ml-2 text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</span>
+                    <span className="text-sm text-gray-500">{review.date}</span>
                   </div>
-                  <h4 className="font-semibold mt-1">{review.title}</h4>
+                  <div className="flex items-center mb-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`h-4 w-4 ${
+                          star <= review.rating ? "text-yellow-400 fill-current" : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
                   <p className="text-gray-700 mt-2">{review.comment}</p>
                   <div className="flex items-center mt-3">
                     <span className="text-sm text-gray-500 mr-2">Was this review helpful?</span>
@@ -284,6 +292,10 @@ export default function ProductReviews({ productId }: { productId: string }) {
           ))
         )}
       </div>
+
+      <Button variant="outline" className="w-full">
+        Load More Reviews
+      </Button>
     </div>
   )
 }

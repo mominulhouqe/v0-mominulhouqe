@@ -114,3 +114,18 @@ export async function createUser(user: User): Promise<User> {
   users.push(user)
   return user
 }
+
+export async function verifyToken(token: string) {
+  try {
+    const verified = await jwtVerify(token, JWT_SECRET)
+    return {
+      success: true,
+      payload: verified.payload,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: "Invalid or expired token",
+    }
+  }
+}

@@ -3,9 +3,10 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Smartphone } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
@@ -246,235 +247,244 @@ export default function BkashPayment({ amount, onSuccess, onCancel }: BkashPayme
     }
   }
 
+  const handlePayment = async () => {
+    setIsLoading(true)
+
+    // Simulate bKash payment process
+    setTimeout(() => {
+      const transactionId = `TXN${Date.now()}`
+      onSuccess(transactionId)
+      setIsLoading(false)
+    }, 3000)
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-center mb-6">
-          <div className="relative h-12 w-32">
-            <Image src="/placeholder.svg?height=48&width=128" alt="bKash Logo" fill className="object-contain" />
+      <Card>
+        <CardHeader className="text-center">
+          <div className="bg-pink-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Smartphone className="h-8 w-8 text-white" />
           </div>
-        </div>
-
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold mb-2">bKash Payment</h2>
-          <p className="text-gray-600">Amount: {formatCurrency(amount)}</p>
-        </div>
-
-        {step === 1 && (
-          <form onSubmit={handleSubmitPhone} className="space-y-4">
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium mb-1">
-                bKash Account Number
-              </label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="01XXXXXXXXX"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
-            <div className="flex space-x-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
-                Cancel
-              </Button>
-              <Button type="submit" className="flex-1" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Next"
-                )}
-              </Button>
-            </div>
-          </form>
-        )}
-
-        {step === 2 && (
-          <form onSubmit={handleSubmitOtp} className="space-y-4">
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">A verification code has been sent to {phoneNumber}</p>
-              <div className="text-center">
-                <span className="text-sm font-medium">
-                  {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="otp" className="block text-sm font-medium mb-1">
-                Enter OTP
-              </label>
-              <Input
-                id="otp"
-                type="text"
-                placeholder="Enter 4-digit OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
-            <div className="flex space-x-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>
-                Back
-              </Button>
-              <Button type="submit" className="flex-1" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  "Verify"
-                )}
-              </Button>
-            </div>
-
-            {countdown === 0 && (
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full text-primary"
-                onClick={handleResendOtp}
-                disabled={isLoading}
-              >
-                Resend OTP
-              </Button>
-            )}
-          </form>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={handleSubmitPin} className="space-y-4">
-            <div>
-              <label htmlFor="pin" className="block text-sm font-medium mb-1">
-                Enter bKash PIN
-              </label>
-              <Input
-                id="pin"
-                type="password"
-                placeholder="Enter your PIN"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-              />
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
-            <div className="flex space-x-2">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(2)}>
-                Back
-              </Button>
-              <Button type="submit" className="flex-1" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Confirm Payment"
-                )}
-              </Button>
-            </div>
-          </form>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-4">
-            <Alert className="bg-green-50 border-green-200">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertTitle>Payment Successful</AlertTitle>
-              <AlertDescription>
-                Your payment has been processed successfully. Please verify your transaction details below.
-              </AlertDescription>
-            </Alert>
-
-            <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
-              <p className="text-sm font-medium mb-1">Transaction Details:</p>
-              <p className="text-sm mb-1">
-                <span className="font-medium">Amount:</span> {formatCurrency(amount)}
-              </p>
-              <p className="text-sm mb-1">
-                <span className="font-medium">Phone:</span> {phoneNumber}
-              </p>
-              <p className="text-sm mb-3">
-                <span className="font-medium">Transaction ID:</span> {transactionId}
-              </p>
-              <p className="text-xs text-gray-500">
-                Please save this transaction ID for your reference. You'll need to enter it below to complete your
-                payment.
-              </p>
-            </div>
-
-            <form onSubmit={handleVerifyTransaction} className="space-y-4">
+          <CardTitle className="text-pink-500">bKash Payment</CardTitle>
+          <CardDescription>Complete your payment of {formatCurrency(amount)} using bKash</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {step === 1 && (
+            <form onSubmit={handleSubmitPhone} className="space-y-4">
               <div>
-                <label htmlFor="transactionId" className="block text-sm font-medium mb-1">
-                  Confirm Transaction ID
+                <label htmlFor="phone" className="block text-sm font-medium mb-1">
+                  bKash Account Number
                 </label>
                 <Input
-                  id="transactionId"
-                  type="text"
-                  placeholder="Enter your transaction ID"
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
+                  id="phone"
+                  type="tel"
+                  placeholder="01XXXXXXXXX"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter the transaction ID you received from bKash to verify your payment
-                </p>
               </div>
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
-
-              {verificationStatus === "success" && (
-                <Alert className="bg-green-50 border-green-200">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertTitle>Payment Verified</AlertTitle>
-                  <AlertDescription>Your payment has been verified successfully.</AlertDescription>
-                </Alert>
-              )}
-
-              {verificationStatus === "error" && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Verification Failed</AlertTitle>
-                  <AlertDescription>
-                    We couldn't verify your payment. Please check the transaction ID and try again.
-                  </AlertDescription>
-                </Alert>
-              )}
 
               <div className="flex space-x-2">
                 <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  className="flex-1"
-                  disabled={verificationStatus === "verifying" || verificationStatus === "success"}
-                >
-                  {verificationStatus === "verifying" ? (
+                <Button type="submit" className="flex-1" disabled={isLoading}>
+                  {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Verifying...
+                      Processing...
                     </>
-                  ) : verificationStatus === "success" ? (
-                    "Verified"
                   ) : (
-                    "Complete Payment"
+                    "Next"
                   )}
                 </Button>
               </div>
             </form>
-          </div>
-        )}
-      </div>
+          )}
+
+          {step === 2 && (
+            <form onSubmit={handleSubmitOtp} className="space-y-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">A verification code has been sent to {phoneNumber}</p>
+                <div className="text-center">
+                  <span className="text-sm font-medium">
+                    {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="otp" className="block text-sm font-medium mb-1">
+                  Enter OTP
+                </label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="Enter 4-digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              </div>
+
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              <div className="flex space-x-2">
+                <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(1)}>
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    "Verify"
+                  )}
+                </Button>
+              </div>
+
+              {countdown === 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-primary"
+                  onClick={handleResendOtp}
+                  disabled={isLoading}
+                >
+                  Resend OTP
+                </Button>
+              )}
+            </form>
+          )}
+
+          {step === 3 && (
+            <form onSubmit={handleSubmitPin} className="space-y-4">
+              <div>
+                <label htmlFor="pin" className="block text-sm font-medium mb-1">
+                  Enter bKash PIN
+                </label>
+                <Input
+                  id="pin"
+                  type="password"
+                  placeholder="Enter your PIN"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                />
+              </div>
+
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              <div className="flex space-x-2">
+                <Button type="button" variant="outline" className="flex-1" onClick={() => setStep(2)}>
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Confirm Payment"
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-4">
+              <Alert className="bg-green-50 border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertTitle>Payment Successful</AlertTitle>
+                <AlertDescription>
+                  Your payment has been processed successfully. Please verify your transaction details below.
+                </AlertDescription>
+              </Alert>
+
+              <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
+                <p className="text-sm font-medium mb-1">Transaction Details:</p>
+                <p className="text-sm mb-1">
+                  <span className="font-medium">Amount:</span> {formatCurrency(amount)}
+                </p>
+                <p className="text-sm mb-1">
+                  <span className="font-medium">Phone:</span> {phoneNumber}
+                </p>
+                <p className="text-sm mb-3">
+                  <span className="font-medium">Transaction ID:</span> {transactionId}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Please save this transaction ID for your reference. You'll need to enter it below to complete your
+                  payment.
+                </p>
+              </div>
+
+              <form onSubmit={handleVerifyTransaction} className="space-y-4">
+                <div>
+                  <label htmlFor="transactionId" className="block text-sm font-medium mb-1">
+                    Confirm Transaction ID
+                  </label>
+                  <Input
+                    id="transactionId"
+                    type="text"
+                    placeholder="Enter your transaction ID"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter the transaction ID you received from bKash to verify your payment
+                  </p>
+                </div>
+
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                {verificationStatus === "success" && (
+                  <Alert className="bg-green-50 border-green-200">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertTitle>Payment Verified</AlertTitle>
+                    <AlertDescription>Your payment has been verified successfully.</AlertDescription>
+                  </Alert>
+                )}
+
+                {verificationStatus === "error" && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Verification Failed</AlertTitle>
+                    <AlertDescription>
+                      We couldn't verify your payment. Please check the transaction ID and try again.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex space-x-2">
+                  <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={verificationStatus === "verifying" || verificationStatus === "success"}
+                  >
+                    {verificationStatus === "verifying" ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Verifying...
+                      </>
+                    ) : verificationStatus === "success" ? (
+                      "Verified"
+                    ) : (
+                      "Complete Payment"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,118 +1,131 @@
 import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Users, Target, Award, Heart } from "lucide-react"
 
 export const metadata = {
   title: "About Us | Strange Lifestyle",
-  description: "Learn about Strange Lifestyle, our story, mission, and values.",
+  description: "Learn about Strange Lifestyle's mission to provide unique fashion that expresses individuality.",
 }
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center">About Strange Lifestyle</h1>
+    <div className="container mx-auto px-4 py-16">
+      {/* Hero Section */}
+      <section className="text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">About Strange Lifestyle</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          We believe fashion is a form of self-expression. Our mission is to provide unique, high-quality clothing that
+          helps you tell your story and express your individuality.
+        </p>
+      </section>
 
-        <div className="relative w-full h-[400px] rounded-lg overflow-hidden mb-12">
+      {/* Story Section */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+        <div>
+          <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+          <p className="text-gray-600 mb-4">
+            Strange Lifestyle was born from a simple idea: everyone deserves to express their unique personality through
+            fashion. Founded in 2020 in Dhaka, Bangladesh, we started as a small team passionate about creating clothing
+            that stands out from the crowd.
+          </p>
+          <p className="text-gray-600 mb-4">
+            What makes us "strange" is our commitment to uniqueness. We don't follow trends – we create them. Every
+            piece in our collection is carefully designed to help you express your individuality and make a statement
+            wherever you go.
+          </p>
+          <p className="text-gray-600">
+            Today, we're proud to serve customers across Bangladesh and beyond, helping them discover their unique style
+            and embrace what makes them different.
+          </p>
+        </div>
+        <div className="relative h-96">
           <Image
-            src="/placeholder.svg?height=800&width=1200&text=Our+Story"
-            alt="Strange Lifestyle Team"
+            src="/placeholder.svg?height=400&width=600&text=Our+Story"
+            alt="Our Story"
             fill
-            className="object-cover"
+            className="object-cover rounded-lg"
           />
         </div>
+      </section>
 
-        <div className="prose prose-lg max-w-none mb-12">
-          <h2 className="text-3xl font-bold mb-4">Our Story</h2>
-          <p>
-            Founded in 2020, Strange Lifestyle was born out of a passion for unique, high-quality clothing that makes a
-            statement. What started as a small collection designed in a tiny apartment has grown into a beloved brand
-            known for its distinctive style and commitment to quality.
-          </p>
-          <p>
-            Our founder, inspired by global fashion trends and a desire to create something truly different, set out to
-            build a clothing brand that challenges conventional fashion norms. The name "Strange Lifestyle" reflects our
-            belief that embracing your uniqueness is something to be celebrated, not hidden.
-          </p>
-
-          <h2 className="text-3xl font-bold mt-8 mb-4">Our Mission</h2>
-          <p>
-            At Strange Lifestyle, our mission is to empower individuals to express themselves through fashion that's as
-            unique as they are. We believe clothing is more than just fabric—it's a form of self-expression, a statement
-            about who you are and what you stand for.
-          </p>
-          <p>
-            We're committed to creating clothing that not only looks good but feels good to wear and is made with
-            respect for the people who create it and the planet we all share.
-          </p>
-
-          <h2 className="text-3xl font-bold mt-8 mb-4">Our Values</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-bold mb-2">Quality</h3>
-                <p className="text-gray-600">
-                  We never compromise on quality. From fabric selection to stitching, every detail matters.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-bold mb-2">Creativity</h3>
-                <p className="text-gray-600">
-                  We push boundaries with innovative designs that stand out from the crowd.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-bold mb-2">Sustainability</h3>
-                <p className="text-gray-600">
-                  We're committed to reducing our environmental impact through responsible practices.
-                </p>
-              </CardContent>
-            </Card>
+      {/* Values Section */}
+      <section className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="text-center">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Target className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Uniqueness</h3>
+            <p className="text-gray-600">
+              We celebrate what makes you different and create clothing that reflects your unique personality.
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Award className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Quality</h3>
+            <p className="text-gray-600">
+              We use only the finest materials and craftsmanship to ensure our products last and look great.
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Passion</h3>
+            <p className="text-gray-600">
+              Fashion is our passion, and we pour our heart into every design and customer interaction.
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Community</h3>
+            <p className="text-gray-600">
+              We're building a community of individuals who aren't afraid to be different and express themselves.
+            </p>
           </div>
         </div>
+      </section>
 
-        <Separator className="my-12" />
-
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-center">Meet Our Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: "Alex Johnson", role: "Founder & Creative Director" },
-              { name: "Sam Taylor", role: "Head of Design" },
-              { name: "Jordan Smith", role: "Production Manager" },
-            ].map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="relative w-full h-[300px] rounded-lg overflow-hidden mb-4">
-                  <Image
-                    src={`/placeholder.svg?height=300&width=300&text=${member.name}`}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-bold">{member.name}</h3>
-                <p className="text-gray-600">{member.role}</p>
+      {/* Team Section */}
+      <section className="mb-16">
+        <h2 className="text-3xl font-bold text-center mb-12">Meet Our Team</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { name: "Ahmed Rahman", role: "Founder & CEO", image: "/placeholder.svg?height=300&width=300&text=Ahmed" },
+            {
+              name: "Fatima Ali",
+              role: "Creative Director",
+              image: "/placeholder.svg?height=300&width=300&text=Fatima",
+            },
+            {
+              name: "Karim Hassan",
+              role: "Head of Operations",
+              image: "/placeholder.svg?height=300&width=300&text=Karim",
+            },
+          ].map((member, index) => (
+            <div key={index} className="text-center">
+              <div className="relative h-64 w-64 mx-auto mb-4 rounded-full overflow-hidden">
+                <Image src={member.image || "/placeholder.svg"} alt={member.name} fill className="object-cover" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+              <p className="text-gray-600">{member.role}</p>
+            </div>
+          ))}
         </div>
+      </section>
 
-        <div className="bg-gray-100 rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">Join the Strange Lifestyle Community</h2>
-          <p className="text-gray-600 mb-6">
-            Discover our latest collections and be part of our growing community of fashion enthusiasts.
-          </p>
-          <Button asChild size="lg">
-            <Link href="/products">Shop Now</Link>
-          </Button>
-        </div>
-      </div>
+      {/* Mission Section */}
+      <section className="bg-gray-50 rounded-lg p-8 text-center">
+        <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          To empower individuals to express their unique personality through fashion, creating a world where being
+          different is celebrated and everyone feels confident in their own skin.
+        </p>
+      </section>
     </div>
   )
 }

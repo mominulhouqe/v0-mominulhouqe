@@ -1,5 +1,5 @@
-import type { CartItem } from "./cart-provider"
 import { formatCurrency } from "@/lib/utils"
+import type { CartItem } from "@/components/cart-provider"
 
 interface OrderSummaryProps {
   cart: CartItem[]
@@ -10,25 +10,22 @@ interface OrderSummaryProps {
 
 export default function OrderSummary({ cart, subtotal, shippingCost, total }: OrderSummaryProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 sticky top-20">
+    <div className="bg-gray-50 p-6 rounded-lg">
       <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 
-      <div className="space-y-4 mb-4">
+      <div className="space-y-3 mb-4">
         {cart.map((item) => (
-          <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex justify-between">
-            <div>
-              <span className="font-medium">{item.name}</span>
-              <span className="text-gray-500 block text-sm">
-                Qty: {item.quantity}
-                {item.selectedSize && `, Size: ${item.selectedSize}`}
-              </span>
-            </div>
+          <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex justify-between text-sm">
+            <span>
+              {item.name} x {item.quantity}
+              {item.selectedSize && ` (${item.selectedSize})`}
+            </span>
             <span>{formatCurrency(item.price * item.quantity)}</span>
           </div>
         ))}
       </div>
 
-      <div className="border-t border-gray-200 pt-4 space-y-2">
+      <div className="border-t pt-4 space-y-2">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
@@ -37,14 +34,10 @@ export default function OrderSummary({ cart, subtotal, shippingCost, total }: Or
           <span>Shipping</span>
           <span>{formatCurrency(shippingCost)}</span>
         </div>
-      </div>
-
-      <div className="border-t border-gray-200 mt-4 pt-4">
-        <div className="flex justify-between font-bold">
+        <div className="flex justify-between font-bold text-lg border-t pt-2">
           <span>Total</span>
           <span>{formatCurrency(total)}</span>
         </div>
-        <p className="text-xs text-gray-500 mt-1">Including VAT</p>
       </div>
     </div>
   )
