@@ -1,7 +1,6 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import bcrypt from "bcryptjs"
-import { getUserByEmail } from "@/lib/auth"
+import { authenticateUser, createToken } from "@/lib/auth"
 
 export async function POST(request: Request) {
   try {
@@ -9,38 +8,54 @@ export async function POST(request: Request) {
 
     // Validate input
     if (!email || !password) {
-      return NextResponse.json({ message: "Missing email or password" }, { status: 400 })
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Missing email or password",
+        },
+        { status: 400 },
+      )
     }
 
-    // Get user
-    const user = await getUserByEmail(email)
-    if (!user) {
-      return NextResponse.json({ message: "Invalid email or password" }, { status: 401 })
+    // Authenticate user
+    const authResult = await authenticateUser(email, password)
+
+    if (!authResult.success || !authResult.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: authResult.message || "Invalid credentials",
+        },
+        { status: 401 },
+      )
     }
 
-    // Verify password
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    if (!passwordMatch) {
-      return NextResponse.json({ message: "Invalid email or password" }, { status: 401 })
-    }
+    // Create JWT token
+    const token = await createToken(authResult.user)
 
     // Set session cookie
     const cookieStore = cookies()
-    cookieStore.set("session", user.id, {
+    cookieStore.set("session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: "/",
+      sameSite: "lax",
     })
 
-    // Return user data (excluding password)
+    // Return user data
     return NextResponse.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
+      success: true,
+      user: authResult.user,
     })
   } catch (error) {
     console.error("Login error:", error)
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 },
+    )
   }
 }

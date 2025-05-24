@@ -1,16 +1,25 @@
-import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
+import { NextResponse } from "next/server"
 
 export async function POST() {
   try {
     const cookieStore = cookies()
 
-    // Clear the admin token cookie
-    cookieStore.delete("admin-token")
+    // Clear admin session cookie
+    cookieStore.delete("auth-token")
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      message: "Admin logged out successfully",
+    })
   } catch (error) {
-    console.error("Logout error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Admin logout error:", error)
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 },
+    )
   }
 }

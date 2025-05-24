@@ -1,43 +1,83 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { verifyToken } from "@/lib/auth"
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   // Define public paths that don't require authentication
-  const isPublicPath = path === "/login" || path === "/register" || path === "/"
+  const isPublicPath =
+    path === "/" ||
+    path === "/login" ||
+    path === "/register" ||
+    path === "/products" ||
+    path === "/about" ||
+    path === "/contact" ||
+    path === "/categories" ||
+    path.startsWith("/products/") ||
+    path.startsWith("/api/auth/login") ||
+    path.startsWith("/api/auth/register") ||
+    path.startsWith("/_next") ||
+    path.startsWith("/favicon")
 
   // Define admin paths
   const isAdminPath = path.startsWith("/admin")
+  const isAdminLoginPath = path === "/admin/login"
 
-  // Get the session token from cookies
+  // Get tokens from cookies
   const sessionToken = request.cookies.get("session")?.value
+  const authToken = request.cookies.get("auth-token")?.value
 
-  // If trying to access admin path without being logged in, redirect to login
-  if (isAdminPath) {
-    // In a real app, you would check if the user is an admin
-    // For this example, we'll use a special admin token
-    const isAdmin = sessionToken === "admin-token"
+  // Handle admin paths
+  if (isAdminPath && !isAdminLoginPath) {
+    if (!authToken) {
+      return NextResponse.redirect(new URL("/admin/login", request.url))
+    }
 
-    if (!sessionToken || !isAdmin) {
+    // Verify admin token
+    const tokenResult = await verifyToken(authToken)
+    if (!tokenResult.success || tokenResult.payload?.role !== "admin") {
       return NextResponse.redirect(new URL("/admin/login", request.url))
     }
   }
 
-  // If trying to access protected path without being logged in, redirect to login
-  if (!isPublicPath && !sessionToken) {
+  // Handle protected customer paths
+  const isProtectedPath = path.startsWith("/account") || path.startsWith("/checkout") || path.startsWith("/orders")
+
+  if (isProtectedPath && !sessionToken) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
-  // If trying to access login/register while logged in, redirect to home
-  if (isPublicPath && sessionToken && path !== "/") {
-    return NextResponse.redirect(new URL("/", request.url))
+  // Verify customer session for protected paths
+  if (isProtectedPath && sessionToken) {
+    const tokenResult = await verifyToken(sessionToken)
+    if (!tokenResult.success) {
+      // Clear invalid token
+      const response = NextResponse.redirect(new URL("/login", request.url))
+      response.cookies.delete("session")
+      return response
+    }
+  }
+
+  // Redirect authenticated users away from auth pages
+  if ((path === "/login" || path === "/register") && sessionToken) {
+    const tokenResult = await verifyToken(sessionToken)
+    if (tokenResult.success) {
+      return NextResponse.redirect(new URL("/account", request.url))
+    }
+  }
+
+  // Redirect authenticated admin away from admin login
+  if (isAdminLoginPath && authToken) {
+    const tokenResult = await verifyToken(authToken)
+    if (tokenResult.success && tokenResult.payload?.role === "admin") {
+      return NextResponse.redirect(new URL("/admin", request.url))
+    }
   }
 
   return NextResponse.next()
 }
 
-// Configure the middleware to run on specific paths
 export const config = {
-  matcher: ["/admin/:path*", "/account/:path*", "/checkout", "/login", "/register"],
+  matcher: ["/admin/:path*", "/account/:path*", "/checkout", "/orders/:path*", "/login", "/register"],
 }

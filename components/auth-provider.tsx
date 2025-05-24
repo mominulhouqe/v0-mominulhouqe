@@ -7,6 +7,7 @@ interface User {
   id: string
   name: string
   email: string
+  role: string
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   error: string | null
+  clearError: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -28,23 +30,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data)
-        }
-      } catch (error) {
-        console.error("Auth check error:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     checkAuth()
   }, [])
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("/api/auth/me", {
+        credentials: "include",
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.user) {
+          setUser(data.user)
+        }
+      }
+    } catch (error) {
+      console.error("Auth check error:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const login = async (email: string, password: string) => {
     setIsLoading(true)
@@ -57,19 +63,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       })
 
       const data = await response.json()
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.message || "Login failed")
       }
 
-      setUser(data)
+      setUser(data.user)
       router.push("/account")
     } catch (error) {
-      console.error("Login error:", error)
-      setError(error instanceof Error ? error.message : "Login failed")
+      const errorMessage = error instanceof Error ? error.message : "Login failed"
+      setError(errorMessage)
       throw error
     } finally {
       setIsLoading(false)
@@ -87,13 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
+        credentials: "include",
       })
-
-      // First check if the response is ok before trying to parse JSON
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: "Registration failed" }))
-        throw new Error(errorData.message || "Registration failed")
-      }
 
       const data = await response.json()
 
@@ -104,8 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user)
       router.push("/account")
     } catch (error) {
-      console.error("Registration error:", error)
-      setError(error instanceof Error ? error.message : "Registration failed")
+      const errorMessage = error instanceof Error ? error.message : "Registration failed"
+      setError(errorMessage)
       throw error
     } finally {
       setIsLoading(false)
@@ -118,14 +120,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "include",
       })
+
       setUser(null)
-      router.push("/login")
+      router.push("/")
     } catch (error) {
       console.error("Logout error:", error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const clearError = () => {
+    setError(null)
   }
 
   return (
@@ -138,6 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         error,
+        clearError,
       }}
     >
       {children}
